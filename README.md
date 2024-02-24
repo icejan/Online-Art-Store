@@ -11,8 +11,7 @@
 * [Credits](#credits)
 
 ## Introduction
-This web application 
-
+This web application lets an art supply store manage their supplies and sell to users online.
 ## Technologies
 The application is created with:
 * Java Servlet
