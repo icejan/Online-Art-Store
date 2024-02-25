@@ -34,7 +34,7 @@ The application is created with:
 ## Installation
 Clone the repo:
 
-`git clone https://github.com/icejan/Online-Art-Store/src.git`
+`git clone https://github.com/icejan/Online-Art-Store.git`
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
