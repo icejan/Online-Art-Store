@@ -24,10 +24,10 @@ The application is created with:
 
 ## Prerequisites
 * Java SE Development Kit
-* MySQL database
-* JDBC driver for MySQL
-* Apache TomCat 
-* Netbeans 12.0
+* JDBC driver for MySQL v8.0.23
+* KubeMQ-SDK-Java v1.0.5
+* Java Protocol Buffers v3.21.12
+* gRPC-Java v1.62.2
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -39,17 +39,26 @@ Clone the repo:
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Usage
-* Compile and run the web application on Netbeans (with TomCat)
+* Currently live on http://35.234.253.55/FrontEnd/
+* If installed, compile and run the web application on Netbeans (with TomCat)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Features
 
-https://github.com/icejan/Online-Art-Store/assets/97641242/823df2a9-6a68-4c82-b3ed-bfb8dea1f118
+https://github.com/icejan/Online-Art-Store/assets/97641242/fabe3e93-42bc-46f5-92ef-a2fb24c35c2e
 
 * Users can login to their account by entering their username and password 
 * Users can browse items and add to their cart
 * System checks the stock of each item in the user's cart to ensure the user does not buy over the limited quantity
-* The database persistently stores account and cart information 
+* The database persistently stores account and cart information
+* Implemented a JWT (JSON Web Token) based authentication that keeps a user logged in while using services.
+* Built docker containers to deploy the services on a Kubernetes cluster in the Google Cloud.
+* Enabled pub/sub messaging between services through KubeMQ event store channels to synchronize databases.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Credits
+* Kubernetes
+* Docker
+* Google Cloud Platform (GCP)
