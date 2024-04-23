@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Search Items</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+    <body>
+        <h1>Search Items (test)</h1>
+        
+        <form action="webresources/search/" 
+              onsubmit="this.action = this.action + this.query.value; this.submit();" 
+              method="get">
+                <input type="hidden" name="type" value="keyword">
+                <input type="text" name="query" class="search--txtbox" value="">
+                <input type="submit" value="Search">
+        </form>
+        
+        <form action="webresources/search/" 
+              onsubmit="this.action = this.action + this.type.value; this.submit();" 
+              method="get">
+                        <input type="hidden" name="type" value="new_arrivals">
+                        <input type="submit" value="New Arrivals">
+        </form>
+        
+        
+    </body>
+</html>

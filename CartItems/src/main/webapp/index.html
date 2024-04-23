@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Cart items test</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+    <body>
+        <h1>Cart items test</h1>
+        <form action="webresources/cart/inCart/" 
+              onsubmit="this.action = this.action + this.query.value; this.submit();" 
+              method="get">
+                <input type="hidden" name="type" value="userid">
+                <input type="text" name="query" class="search--txtbox" value="">
+                <input type="submit" value="Cart">
+        </form>
+        
+         <form action="webresources/cart/update" method="post"> 
+             item id:
+           <input type="text" id="itemid" name="itemid">
+           user id:
+           <input type="text" id="userid" name="userid">
+           quantity:
+             <input type="text" id="quantity" name="quantity">
+              <button type="submit">add cart</button>
+        </form>
+        
+    </body>
+</html>
+
