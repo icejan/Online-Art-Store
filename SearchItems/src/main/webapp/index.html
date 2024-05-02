@@ -21,7 +21,32 @@
                         <input type="hidden" name="type" value="new_arrivals">
                         <input type="submit" value="New Arrivals">
         </form>
-        
-        
+        <form action="webresources/search/" 
+              onsubmit="this.action = this.action + this.query.value; this.submit();" 
+              method="get">
+                        <input type="hidden" name="type" value="itemid">
+                        <input type="text" name="query" class="search--txtbox" value="">
+                        <input type="submit" value="search by itemid">
+        </form>
+        <form action="webresources/search/" 
+              onsubmit="this.action = this.action + this.query.value; this.submit();" 
+              method="get">
+                        <input type="hidden" name="type" value="multipleid">
+                        <input type="text" name="query" class="search--txtbox" value="">
+                        <input type="submit" value="Get Multiple by ID">
+        </form>
+        <form action="webresources/search/" 
+              onsubmit="this.action = this.action + this.query.value; this.submit();" 
+              method="get">
+                        <input type="hidden" name="type" value="brand">
+                        <input type="text" name="query" class="search--txtbox" value="">
+                        <input type="submit" value="search by brand">
+        </form>
+        <form action="webresources/search/" 
+              onsubmit="this.action = this.action + this.type.value; this.submit();" 
+              method="get">
+                        <input type="hidden" name="type" value="all_items">
+                        <input type="submit" value="get all items">
+        </form>
     </body>
 </html>

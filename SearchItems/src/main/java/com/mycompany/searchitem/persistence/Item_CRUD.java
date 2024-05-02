@@ -33,7 +33,7 @@ public class Item_CRUD {
         return con;
     }
     
-   public static ArrayList <Item> searchForItems(String command, String identifier) {
+   public static ArrayList <Item> searchForItems(String type, String query) {
        //command can be keyword, category or brand
        //identifier is for specific item we are looking
        ArrayList <Item> info = new ArrayList<Item>();
@@ -42,25 +42,37 @@ public class Item_CRUD {
             Connection con=getCon();
             
             String q = ""; //SQL scripts depending on what we're looking for
-            if (command == null) {
-                //SELECT * FROM Item
-                q = "SELECT * FROM Item";
+            switch (type) {
+                case "all_items":
+                    q = "SELECT * FROM Item";
+                    break;
+                case "keyword":
+                    //SELECT * from Item where item_name LIKE "%keyword%";
+                    q = "SELECT * FROM Item WHERE item_name LIKE \"%"+ query +"%\"";
+                    break;
+                case "new_arrivals":
+                    //SELECT * from Item ORDER BY item_list_date DESC;
+                    q = "SELECT * from Item ORDER BY item_list_date DESC;";
+                    break;
+                case "brand":
+                    //SELECT * from Item where brand_id = 2;
+                    q = "SELECT * from Item where brand_id = "+query+";";
+                    break;
+                case "itemid":
+                    //SELECT * FROM search_ASMS.Item where item_id = 1;
+                    q="SELECT * FROM Item where item_id = "+query+";";
+                    break;
+                case "multipleid":
+                    //SELECT * FROM Item where item_id IN (3,2,4,1) ORDER BY FIELD(item_id, 3,2,4,1);
+                    //String numbers = query.substring(1,query.length()-1);
+                    q="SELECT * FROM Item where item_id IN ("+query+") ORDER BY FIELD(item_id, "+query+");";
+                    break;
                 
-            } else if (command=="keyword") {
-                //SELECT * from Item where item_name LIKE "%keyword%";
-                q = "SELECT * FROM Item WHERE item_name LIKE \"%"+ identifier +"%\"";
-            
-            } else if (command=="releasedate") {
-                //SELECT * from Item 
-                //ORDER BY item_list_date DESC;
-                q = "SELECT * from Item ORDER BY item_list_date DESC;";
-            } else if (command=="itemid") {
-                //SELECT * FROM search_ASMS.Item where item_id = 1;
-                q="SELECT * FROM Item where item_id = "+identifier+";";
             }
             
             
-            //System.out.println("Made SQL command: " + q);
+            System.out.println("Made SQL command: " + q);
+            
             PreparedStatement ps=con.prepareStatement(q);
             ResultSet rs=ps.executeQuery();
             

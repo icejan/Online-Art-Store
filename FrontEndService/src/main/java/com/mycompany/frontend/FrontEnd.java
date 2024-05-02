@@ -11,8 +11,10 @@ import java.io.UnsupportedEncodingException;
 import java.util.AbstractMap;
 import java.util.Date;
 import java.util.Map;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors.*;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -21,10 +23,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.NewCookie;
+
 import com.mycompany.business.Business;
 import com.mycompany.business.ItemsXML;
 import com.mycompany.business.CartXML;
 import com.mycompany.helper.Item;
+import com.mycompany.helper.CartItem;
+import java.util.stream.Collectors;
 
 @WebServlet(name = "FrontEnd", urlPatterns = {"/FrontEnd"})
 public class FrontEnd extends HttpServlet {
@@ -107,7 +112,7 @@ public class FrontEnd extends HttpServlet {
                     Cookie newCookie = new Cookie(authenticationCookieName, token);
                     response.addCookie(newCookie);
                     
-                    ItemsXML result = retreiveServicesFromBackend("all_items", token);
+                    ItemsXML result = retreiveServicesFromBackend("all_items", "all_items", token);
                     
                     request.setAttribute("itemResults", result);
                     
@@ -135,6 +140,7 @@ public class FrontEnd extends HttpServlet {
             case "search":
 
                 ItemsXML result;
+                String type = request.getParameter("type");
                 String query = request.getParameter("query");
                 
                 
@@ -143,11 +149,11 @@ public class FrontEnd extends HttpServlet {
                 //System.out.println("query is" + query);
                 if (token.isEmpty()) {
                     request.setAttribute("username", null);
-                    result = retreiveServicesFromBackend(query, null);
+                    result = retreiveServicesFromBackend(type,query, null);
                     
                 } else {
                     request.setAttribute("username", uname);
-                    result = retreiveServicesFromBackend(query, token);
+                    result = retreiveServicesFromBackend(type,query, token);
                 }
                 
                 request.setAttribute("itemResults", result);
@@ -160,8 +166,27 @@ public class FrontEnd extends HttpServlet {
                 CartXML cart_result;
                 cart_result = retreiveInCartServicesFromBackend (uname, token);
                 
+                String itemids = Integer.toString(cart_result.getCartItems().get(0).getItemId());
+                for (int i = 1; i < cart_result.getCartItems().size(); i++){
+                    itemids += ","+cart_result.getCartItems().get(i).getItemId();
+                }
+ 
+                //System.out.println("itemids: " + itemids);
+                ItemsXML items_result;
+                items_result = retreiveServicesFromBackend("multipleid",itemids, token);
+                
+                //testing
+                /*
+                System.out.println("items result");
+                for (Item i : items_result.getItems())
+                    System.out.println(i + " : " + i.getItemId());
+                */
                 request.setAttribute("username", uname);
                 request.setAttribute("cartResults", cart_result);
+                request.setAttribute("itemResults", items_result);
+                
+                request.getSession().setAttribute("cartsession", cart_result);
+                request.getSession().setAttribute("itemsession", items_result);
                 
                 requestDispatcher = request.getRequestDispatcher("cartPage.jsp");
                 requestDispatcher.forward(request, response);
@@ -169,20 +194,93 @@ public class FrontEnd extends HttpServlet {
                 break;
             case "addcart":
                 String itemid = request.getParameter("itemid");
-                String quantity = request.getParameter("text_input-"+itemid);//String text_field_name = "text_input-"+item.getItemId();
+                String quantity = request.getParameter("text_input-"+itemid);
+                String itemstock = request.getParameter("item_stock-"+itemid);
+               
                 //System.out.println("frontend got itemid: " + itemid + "frontend got quantity: "+ quantity);
                 
-                //username, item, quantity
-                Boolean success = false;
-                success = retreiveAddCartServicesFromBackend(uname, itemid,quantity, token);
+                int quantity_num = Integer.valueOf(quantity);
+                int addedquantity = 0;
+
+                addedquantity = retreiveAddCartServicesFromBackend(uname, itemid,quantity, itemstock, false, token);
+                
+                int success = 0;
+                if (addedquantity == quantity_num){
+                    //succesfully added the full quantity
+                    success = 1;
+                } else if (addedquantity > 0){
+                    //user tried to add over stock
+                    success = addedquantity;
+                }
                 request.setAttribute("username", uname);
                 request.setAttribute("success", success);
                 requestDispatcher = request.getRequestDispatcher("addCart.jsp");
                 requestDispatcher.forward(request, response);
                 break;
+            case "removecart":
+                String item_id = request.getParameter("itemid");
+                int index = Integer.valueOf(request.getParameter("index"));
+                CartXML cartinfo = null;
+                cartinfo = (CartXML) request.getSession().getAttribute("cartsession");
+                
+                ItemsXML iteminfo = null;
+                iteminfo = (ItemsXML) request.getSession().getAttribute("itemsession");
+                
+                int outcome = 0;
+                outcome = retreiveRemoveCartServicesFromBackend (uname, item_id, token);
+                
+                if (cartinfo != null && iteminfo != null && outcome == 1) {
+                    //System.out.println("cartinfo2: "+ cartinfo.getCartItems().get(0).getItemId());
+                    cartinfo.getCartItems().remove(index);
+                    iteminfo.getItems().remove(index);
+                    
+                } 
+                
+                request.setAttribute("cartResults", cartinfo);
+                request.setAttribute("itemResults", iteminfo);
+                request.getSession().setAttribute("cartsession", cartinfo);
+                request.getSession().setAttribute("itemsession", iteminfo);
+                
+                request.setAttribute("username", uname);
+                request.setAttribute("outcome", outcome);
+                requestDispatcher = request.getRequestDispatcher("cartPage.jsp");
+                requestDispatcher.forward(request, response);
+                break;
+            
+            case "updatecart": 
+                String updateitem_id = request.getParameter("itemid");
+                String updatequantity = request.getParameter("text_input-"+updateitem_id);
+                String updateitemstock = request.getParameter("item_stock-"+updateitem_id);
+                
+                ItemsXML updateiteminfo = null;
+                updateiteminfo = (ItemsXML) request.getSession().getAttribute("itemsession");
+                
+                int updateindex = Integer.valueOf(request.getParameter("index"));
+                CartXML updatecartinfo = null;
+                updatecartinfo = (CartXML) request.getSession().getAttribute("cartsession");
+
+                int updateoutcome = 0;
+                updateoutcome = retreiveAddCartServicesFromBackend(uname, updateitem_id,updatequantity, updateitemstock, true, token);
+                
+                if (updatecartinfo != null && updateoutcome != 0) {
+                    //System.out.println("cartinfo2: "+ cartinfo.getCartItems().get(0).getItemId());
+                    updatecartinfo.getCartItems().get(updateindex).setItemQuantity(Integer.valueOf(updatequantity));
+
+                } 
+                
+                request.setAttribute("cartResults", updatecartinfo);
+                request.getSession().setAttribute("cartsession", updatecartinfo);
+                
+                request.setAttribute("itemResults", updateiteminfo);
+                
+                request.setAttribute("username", uname);
+                request.setAttribute("outcome", updateoutcome);
+                requestDispatcher = request.getRequestDispatcher("cartPage.jsp");
+                requestDispatcher.forward(request, response);
+                break;
+                
                 
         }
-        
         
         
     }
@@ -226,9 +324,10 @@ public class FrontEnd extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private ItemsXML retreiveServicesFromBackend(String query, String token) {
+    private ItemsXML retreiveServicesFromBackend(String type, String query, String token) {
+        //System.out.println("--- retreiveServicesFromBackend has type: "+type+" query:" + query);
         try {
-            return (Business.getServices(query, token));
+            return (Business.getServices(type, query, token));
         } catch (IOException ex) {
             Logger.getLogger(FrontEnd.class.getName()).log(Level.SEVERE, null, ex);
             return (null);
@@ -245,8 +344,13 @@ public class FrontEnd extends HttpServlet {
         }
     }
     
-    private boolean retreiveAddCartServicesFromBackend (String username, String itemid, String quantity, String token){
-        return (Business.getAddCartServices(username, itemid, quantity, token));
+    private int retreiveAddCartServicesFromBackend (String username, String itemid, String quantity, String itemStock, Boolean isUpdate, String token){
+        return (Business.getAddCartServices(username, itemid, quantity, itemStock, isUpdate, token));
     }
+    
+    private int retreiveRemoveCartServicesFromBackend (String username, String itemid, String token){
+        return (Business.getRemoveCartServices(username, itemid, token));
+    }
+    
 }
 

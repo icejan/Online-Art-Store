@@ -50,7 +50,7 @@ public class Item {
     }
     
     public int getItemBrandId() {
-        return item_id;
+        return item_brand_id;
     }
 
     public void setItemBrandId(int brand_id) {

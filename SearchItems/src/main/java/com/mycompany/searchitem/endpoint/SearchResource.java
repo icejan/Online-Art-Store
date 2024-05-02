@@ -15,6 +15,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
@@ -26,7 +27,7 @@ import com.mycompany.searchitem.business.SearchBusiness;
 import com.mycompany.searchitem.business.ItemsXML;
 import com.mycompany.searchitem.helper.Item;
 
-import com.mycompany.searchitem.business.Messaging; //fortestings
+//import com.mycompany.searchitem.business.Messaging; //fortestings
 /**
  * REST Web Service
  *
@@ -47,8 +48,8 @@ public class SearchResource {
     
     @GET
     @Produces(MediaType.APPLICATION_XML + ";charset=utf-8")
-    public String getXml(@PathParam("query") String query) {
-
+    public String getXml(@PathParam("query") String query, @QueryParam("type") String type) {
+        System.out.println("Type: "+type+ " Query: "+query);
         //ADDCART:2:1 => id:quantity
         //Messaging.Receiving_Events_Store("ADDCART:2:1");
         //System.out.println("query:" + query);
@@ -57,7 +58,7 @@ public class SearchResource {
         ItemsXML items;
         
         
-        items = search.getItemsByKeyword(query);
+        items = search.getItemsByKeyword(type, query);
         
         
         //System.out.println(">>>>>>>>>>>>>>>>>>" + items);

@@ -67,8 +67,9 @@ form,
 }
 
 .row {
-  width: 500px;
-  max-width: 800px;
+  width: 1640px;
+  display:flex;
+  max-width: 1640px;
   padding: 0 14px;
 }
 
@@ -150,6 +151,7 @@ nav {
   justify-content: space-between;
   align-items: center;
   padding: 0 12px;
+  
 }
 
 .search--btn {
@@ -242,6 +244,8 @@ nav {
 /* ITEMS */
 
 .items {
+  width:1140px;
+  display:flex;
   flex-direction: column;
 }
 .item_picture {
@@ -251,6 +255,7 @@ nav {
 
 .items_title {
   text-align: left;
+  margin-left: 14px;
   margin-bottom: 20px;
 }
 
@@ -263,7 +268,7 @@ nav {
 
 .items_form--list {
   display: flex;
-  
+  margin-bottom: 90px;
   padding: 0;
   flex-wrap: wrap;
   flex-direction: column;

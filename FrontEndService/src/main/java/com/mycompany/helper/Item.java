@@ -67,7 +67,7 @@ public class Item {
     }
     
     public int getItemBrandId() {
-        return itemId;
+        return itemBrandId;
     }
 
     public void setItemBrandId(int brand_id) {

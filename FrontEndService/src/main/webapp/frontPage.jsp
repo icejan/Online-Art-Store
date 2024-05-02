@@ -32,6 +32,7 @@
             <div class="search__bar--form">
                 <form action="FrontEnd" method="post">
                     <input type="hidden" name="pageName" value="search">
+                    <input type="hidden" name="type" value="keyword">
                     <input type="text" name="query" class="search--txtbox">
                     <input type="submit" class="search--btn" value="search">
                 </form>
@@ -72,8 +73,7 @@
             <div class = "menu-container">
                 <li class="menu--list">
                     <form action="FrontEnd" method="post">
-                        <input type="hidden" name="pageName" value="search">
-                        <input type="hidden" name="query" value="browse_categories">
+                        <input type="hidden" name="pageName" value="category">
                         <input type="submit" class="
                                                    menu--anchor
                                                   nav--btn" value="Browse Categories">
@@ -82,6 +82,7 @@
                 <li class="menu--list">
                     <form action="FrontEnd" method="post">
                         <input type="hidden" name="pageName" value="search">
+                        <input type="hidden" name="type" value="best_sellers">
                         <input type="hidden" name="query" value="best_sellers">
                         <input type="submit" class="
                                                     menu--anchor
@@ -91,6 +92,7 @@
                 <li class="menu--list">
                     <form action="FrontEnd" method="post">
                         <input type="hidden" name="pageName" value="search">
+                        <input type="hidden" name="type" value="new_arrivals">
                         <input type="hidden" name="query" value="new_arrivals">
                         <input type="submit" class="
                                                     menu--anchor
@@ -101,8 +103,7 @@
         </section>
         <section id="items">
         <div class="container">
-            <div class="row">
-                <h2 class="items_title">
+            <h2 class="items_title">
                     <% 
                         ItemsXML items = (ItemsXML) request.getAttribute("itemResults");
                         
@@ -132,6 +133,8 @@
                         <%}%>
                 </h2>
                 
+            <div class="row">
+                
                 <div class="items__list">
                     
                     <% 
@@ -140,6 +143,7 @@
                             String item_img_src = "resources/"+item.getItemId() + ".jpg";
                             //String item_id_name = "text_input-"+item.getItemId();
                             String text_field_name = "text_input-"+item.getItemId();
+                            String stock_field_name = "item_stock-"+item.getItemId();
                         %>
                     <li class = "items_form--list">
                         <%if (username != null) {%>
@@ -179,6 +183,7 @@
                                             <input type="button" class="change_quantity--btn" onclick="decreaseValue()" value="-" />
                                             <input type="text" name="<%=text_field_name%>" class="quantity--txtbox" value="1">
                                             <input type="button" class="change_quantity--btn" onclick="incrementValue()" value="+" />
+                                            <input type="hidden" name="<%=stock_field_name%>" value="<%=item.getItemStock()%>"/>
                                             <input type="submit" class="add_cart--btn" value="Add to Cart" >
                                         </div>
                                         <%} else {%>

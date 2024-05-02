@@ -14,15 +14,38 @@
                 <input type="submit" value="Cart">
         </form>
         
-         <form action="webresources/cart/update" method="post"> 
+         <form action="webresources/cart/add" method="post"> 
              item id:
            <input type="text" id="itemid" name="itemid">
            user id:
            <input type="text" id="userid" name="userid">
            quantity:
              <input type="text" id="quantity" name="quantity">
+           item stock:
+             <input type="text" id="itemstock" name="itemstock">
               <button type="submit">add cart</button>
         </form>
+        
+        <form action="webresources/cart/remove" method="post"> 
+             item id:
+           <input type="text" id="itemid" name="itemid">
+           user id:
+           <input type="text" id="userid" name="userid">
+              <button type="submit">remove cart</button>
+        </form>
+        
+        <form action="webresources/cart/update" method="post"> 
+             item id:
+           <input type="text" id="itemid" name="itemid">
+           user id:
+           <input type="text" id="userid" name="userid">
+           quantity:
+             <input type="text" id="quantity" name="quantity">
+           item stock:
+             <input type="text" id="itemstock" name="itemstock">
+              <button type="submit">update cart</button>
+        </form>
+        
         
     </body>
 </html>

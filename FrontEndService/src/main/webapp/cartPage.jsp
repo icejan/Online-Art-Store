@@ -4,7 +4,9 @@
 <%@page import="com.mycompany.helper.CartItem"%>
 <%@page import="com.mycompany.helper.Item"%>
 <%@page import="com.mycompany.business.CartXML"%>
+<%@page import="com.mycompany.business.ItemsXML"%>
 <%@page import="java.util.ArrayList"%>
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 
@@ -22,16 +24,15 @@
         <% 
             String username = (String) request.getAttribute("username");
             CartXML items = (CartXML)request.getAttribute("cartResults");
-            
+            ItemsXML iteminfos = (ItemsXML)request.getAttribute("itemResults");
         //ArrayList<Item> items = (ArrayList)session.getAttribute("item_cart_info");
         %>                            
-        
-        
         <section id="nav-store"> 
         <nav>
             <div class="search__bar--form">
                 <form action="FrontEnd" method="post">
                     <input type="hidden" name="pageName" value="search">
+                    <input type="hidden" name="type" value="keyword">
                     <input type="text" name="query" class="search--txtbox">
                     <input type="submit" class="search--btn" value="search">
                 </form>
@@ -72,8 +73,7 @@
             <div class = "menu-container">
                 <li class="menu--list">
                     <form action="FrontEnd" method="post">
-                        <input type="hidden" name="pageName" value="search">
-                        <input type="hidden" name="query" value="browse_categories">
+                        <input type="hidden" name="pageName" value="category">
                         <input type="submit" class="
                                                    menu--anchor
                                                   nav--btn" value="Browse Categories">
@@ -82,6 +82,7 @@
                 <li class="menu--list">
                     <form action="FrontEnd" method="post">
                         <input type="hidden" name="pageName" value="search">
+                        <input type="hidden" name="type" value="best_sellers">
                         <input type="hidden" name="query" value="best_sellers">
                         <input type="submit" class="
                                                     menu--anchor
@@ -91,6 +92,7 @@
                 <li class="menu--list">
                     <form action="FrontEnd" method="post">
                         <input type="hidden" name="pageName" value="search">
+                        <input type="hidden" name="type" value="new_arrivals">
                         <input type="hidden" name="query" value="new_arrivals">
                         <input type="submit" class="
                                                     menu--anchor
@@ -106,20 +108,23 @@
             </h2>
             <div class="cart_row">
                 <div class="cart__list">
-                    <form action="removeCart" method="post">
+                    
                         
                         <% 
                             
                             double total_item_price = 0;
-                            //double total_num_items = 0;
-                            
-                            //int i = 0;
-                            if (items.getCartItems() != null && !items.getCartItems().isEmpty()){
-                                for(CartItem item: items.getCartItems()){
-                                //Item item = items.get(i);
+                            double total_num_items = 0;
+                            double subtotal = 0;
+                            String quantity_textfield, stock_textfield;
+                            int i = 0;
+                            if (iteminfos.getItems() != null && !iteminfos.getItems().isEmpty()){
+                                for(Item item: iteminfos.getItems()){
+                                CartItem cart_item = items.getCartItems().get(i);
                                 String item_img_src = "resources/"+item.getItemId() + ".jpg";
-                                //total_item_price = item.getItemPrice()*cart_item.getItemQuantity();
                                 
+                                total_item_price = item.getItemPrice()*cart_item.getItemQuantity();
+                                 quantity_textfield = "text_input-"+ item.getItemId();
+                                 stock_textfield = "item_stock-"+item.getItemId();
                         %>
                         <% 
                             
@@ -136,7 +141,7 @@
                                     <td class="cart--td">
                                         <li class="cart--li">
                                             
-                                            <%//=items.get(i).getItemName()%>
+                                            <%=item.getItemName()%>
                                             
                                         </li>
                                         <li class="cart--li">
@@ -145,7 +150,12 @@
                                             
                                         </li>
                                         <li class="cart--li">
-                                            <input type="submit" class="nav--btn" value="Remove">
+                                            <form action="FrontEnd" method="post">
+                                                <input type="hidden" name="pageName" value="removecart">
+                                                <input type="hidden" name="index" value="<%=i%>">
+                                                <input type="hidden" name="itemid" value="<%=item.getItemId()%>"/>
+                                                <input type="submit" class="nav--btn" value="Remove">
+                                            </form>
                                         </li>
                                             
                                     </td>
@@ -159,20 +169,28 @@
                                             </h4>
                                             <h5 class="each_price--txt">Each: $
                                                 
-                                                <%//=new DecimalFormat("#.##").format(item.getItemPrice())%>
+                                                <%=new DecimalFormat("#.##").format(item.getItemPrice())%>
                                                 
                                             </h5>
 
                                         </li>
+                                        <form action="FrontEnd" method="post">
                                         <li class="cart_price--li">
                                             
                                             <input type="button" class="change_quantity--btn" onclick="decreaseValue()" value="-" />
-                                            <input type="text" id="addCart_quantity" name="quantity" class="quantity--txtbox" id="quantity" value="<%=item.getItemQuantity()%>">
+                                            <input type="text" id="addCart_quantity" name="<%=quantity_textfield%>" class="quantity--txtbox" value="<%=cart_item.getItemQuantity()%>">
                                             <input type="button" class="change_quantity--btn" onclick="incrementValue()" value="+" />
                                         </li>
                                         <li class="cart_price--li">
-                                            <input type="submit" class="update--btn" value="Update">
+                                            
+                                                <input type="hidden" name="pageName" value="updatecart">
+                                                <input type="hidden" name="itemid" value="<%=item.getItemId()%>"/>
+                                                <input type="hidden" name="<%=stock_textfield%>" value="<%=item.getItemStock()%>"/>
+                                                <input type="hidden" name="index" value="<%=i%>">
+                                                <input type="submit" class="update--btn" value="Update">
+                                            
                                         </li>
+                                        </form>   
                                     </td>
                                 </tr>  
                             </table>
@@ -180,22 +198,23 @@
                         </div>
                          
                         <%
-                            //subtotal += total_item_price;
-                            //total_num_items += item.getItemQuantity();
-                              
+                            subtotal += total_item_price;
+                            total_num_items += cart_item.getItemQuantity();
+                              i++;
                             } //end for loop
                         }//end if statement
                         %>
                             
                         <%
-                            double subtotal = 0;//(double) session.getAttribute("cartsubtotal");
-                            double tax = 0;//(double) session.getAttribute("carttax");
-                            double shipping =0;// (double) session.getAttribute("cartshipping");
-                            double total = 0;//s(double) session.getAttribute("carttotal");
+
+                            double shipping = 10 + total_num_items*2;
+                            double tax = (subtotal+shipping)*0.13;
+                            double total = subtotal+shipping+tax;
+                            
                         %>           
                          
                          
-                    </form>
+                    
                 </div>
                 <div class="order_summary">
                     <div class="order_total">
@@ -210,7 +229,7 @@
                                 <td class="align--right
                                             total--td">$
                                     
-                                    <%=subtotal%>
+                                    <%=new DecimalFormat("#.##").format(subtotal)%>
                                     
                                 </td>
                             </tr>

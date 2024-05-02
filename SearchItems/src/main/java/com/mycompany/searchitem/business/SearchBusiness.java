@@ -19,18 +19,10 @@ import com.mycompany.searchitem.business.ItemsXML;
 
 public class SearchBusiness {
     
-    public ItemsXML getItemsByKeyword(String keyword){
+    public ItemsXML getItemsByKeyword(String type, String query){
         //System.out.println("get items by keyword:" + keyword);
         ArrayList <Item> items;
-        
-        if (keyword.equals("all_items")){
-            items = Item_CRUD.searchForItems(null, null);
-        } else if (keyword.equals("new_arrivals")){
-            items = Item_CRUD.searchForItems("releasedate", null);
-        } else {
-            items = Item_CRUD.searchForItems("keyword", keyword);
-        }
-        
+        items = Item_CRUD.searchForItems(type, query);
         /*for testing
         int index=0;
         for (Item i : items){

@@ -99,12 +99,15 @@ public class CartResource {
 
     @POST
     @Produces(MediaType.TEXT_HTML)
-    @Path("update")
-    public String updateCart(@FormParam("itemid") int item_id, @FormParam("userid") int user_id, @FormParam("quantity") int quantity) throws InterruptedException {
+    @Path("add")
+    public String addCart(@FormParam("itemid") int item_id, 
+                                @FormParam("userid") int user_id, 
+                                @FormParam("quantity") int quantity, 
+                                @FormParam("itemstock") int itemstock) throws InterruptedException {
         CartBusiness cart = new CartBusiness();
         int bs;
         try {
-            bs = cart.addCart (user_id, item_id, quantity);
+            bs = cart.addCart (user_id, item_id, quantity, itemstock);
             return (String.valueOf(bs));
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(CartResource.class.getName()).log(Level.SEVERE, null, ex);
@@ -119,10 +122,58 @@ public class CartResource {
             Logger.getLogger(CartResource.class.getName()).log(Level.SEVERE, null, ex);
                return (ex.getMessage());
         }
-        
-
+    }
+    
+    @POST
+    @Produces(MediaType.TEXT_HTML)
+    @Path("remove")
+    public String removeCart(@FormParam("itemid") int item_id, 
+                                @FormParam("userid") int user_id) throws InterruptedException {
+        CartBusiness cart = new CartBusiness();
+        int bs;
+        try {
+            bs = cart.removeCart (user_id, item_id);
+            return (String.valueOf(bs));
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(CartResource.class.getName()).log(Level.SEVERE, null, ex);
+            return (ex.getMessage());
+        } catch (SQLException ex) {
+            Logger.getLogger(CartResource.class.getName()).log(Level.SEVERE, null, ex);
+               return (ex.getMessage());
+        } catch (ServerAddressNotSuppliedException ex) {
+            Logger.getLogger(CartResource.class.getName()).log(Level.SEVERE, null, ex);
+               return (ex.getMessage());
+        } catch (IOException ex) {
+            Logger.getLogger(CartResource.class.getName()).log(Level.SEVERE, null, ex);
+               return (ex.getMessage());
+        }
+    }
+    
+    @POST
+    @Produces(MediaType.TEXT_HTML)
+    @Path("update")
+    public String updateCart(@FormParam("itemid") int item_id, 
+                                @FormParam("userid") int user_id, 
+                                @FormParam("quantity") int quantity, 
+                                @FormParam("itemstock") int itemstock) throws InterruptedException {
+        CartBusiness cart = new CartBusiness();
+        int bs;
+        try {
+            bs = cart.updateCart (user_id, item_id, quantity, itemstock);
+            return (String.valueOf(bs));
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(CartResource.class.getName()).log(Level.SEVERE, null, ex);
+            return (ex.getMessage());
+        } catch (SQLException ex) {
+            Logger.getLogger(CartResource.class.getName()).log(Level.SEVERE, null, ex);
+               return (ex.getMessage());
+        } catch (ServerAddressNotSuppliedException ex) {
+            Logger.getLogger(CartResource.class.getName()).log(Level.SEVERE, null, ex);
+               return (ex.getMessage());
+        } catch (IOException ex) {
+            Logger.getLogger(CartResource.class.getName()).log(Level.SEVERE, null, ex);
+               return (ex.getMessage());
+        }
     }
 
-
-    
 }

@@ -12,10 +12,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
-
-
 
 public class User_Cart_CRUD {
     private static Connection getCon() {
@@ -38,9 +38,9 @@ public class User_Cart_CRUD {
             Connection con= getCon();
             String q;
             
-                //SET GLOBAL time_zone = '+3:00'; select * from User_Item_Cart WHERE user_id = 2;
+                //SELECT * FROM User_Item_Cart where user_id = 2 ORDER BY add_datetime;
                 q = "select * from User_Item_Cart "
-                    + "WHERE user_id = "+user_id+";";
+                    + "WHERE user_id = "+user_id+" ORDER BY add_datetime;";
             
             //System.out.println("Made SQL command: " + q);
             PreparedStatement ps=con.prepareStatement(q);
@@ -95,35 +95,7 @@ public class User_Cart_CRUD {
        return item;
     }
     
-    public static int getCartItemStock (int item_id){
-        int total_quantity = 0;
-        
-        try {
-            Connection con=getCon();
-            
-            //select cart_quantity from User_Item_Cart WHERE item_id = 2;
-            String q = "SELECT cart_quantity from User_Item_Cart WHERE item_id = "+ item_id + ";";
-            //System.out.println("Made SQL command: " + q);
-            PreparedStatement ps=con.prepareStatement(q);
-            ResultSet rs=ps.executeQuery();
-            
-            while (rs.next()){  
-                int itemquantity = rs.getInt("cart_quantity");
-                
-                //System.out.println("in Card CRUD for" + itemname + "item quantity" + itemquantity);
-                total_quantity += itemquantity ;
-            }
-            
-           con.close(); 
-        } catch (Exception e) {
-            System.out.println(e);
-            
-        }
-        
-        return total_quantity;
-    }
-    
-    public static boolean addCart(int user_id, int item_id, int quantity, boolean inCart)  {
+    public static int addCart(int user_id, int item_id, int quantity, boolean inCart)  {
         
        try {
            
@@ -144,12 +116,45 @@ public class User_Cart_CRUD {
                 con.close();
             
                 //System.out.print("result from sql" + result);
-                return true;
+                return result;
             
             } else {
                 //add new item to cart
-                //INSERT INTO User_Item_Cart VALUES (1, 5111, 101);
-                String q = "INSERT INTO User_Item_Cart VALUES ("+quantity+", "+user_id+","+item_id+");";
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                LocalDateTime date = LocalDateTime.now();
+                
+                //INSERT INTO User_Item_Cart VALUES (1, 2, 1, "2024-01-01 10:12:33");
+                String q = "INSERT INTO User_Item_Cart VALUES ("+user_id+", "+item_id+", "+quantity+", "+"'"+date.format(formatter)+"');";
+            
+                System.out.println("Made SQL command: " + q);
+                
+                PreparedStatement ps=con.prepareStatement(q);
+                int result = ps.executeUpdate();
+                
+                con.close();
+            
+                //System.out.print("result from sql" + result);
+                return result;
+            }
+            
+            
+        } catch (Exception e) {
+            System.out.println(e);
+            return 0;
+        }
+
+    }
+    
+    public static int removeCart (int user_id, int item_id) {
+        
+        try {
+           
+            Connection con=getCon();
+            
+                //DELETE FROM User_Item_Cart WHERE user_id=2 and item_id=4;
+                String q = "DELETE from User_Item_Cart "
+                    + " WHERE user_id = " + user_id 
+                    + " AND item_id = " + item_id + ";";
             
                 //System.out.println("Made SQL command: " + q);
                 PreparedStatement ps=con.prepareStatement(q);
@@ -158,16 +163,14 @@ public class User_Cart_CRUD {
                 con.close();
             
                 //System.out.print("result from sql" + result);
-                return true;
-            }
-            
-            
+                return result;
+
         } catch (Exception e) {
             System.out.println(e);
-            return false;
+            return 0;
         }
-
-   }
+        
+    }
     
 
 }

@@ -9,11 +9,7 @@
             30
         </session-timeout>
     </session-config>
-    <listener>
-    <listener-class>
-             com.mycompany.searchitem.endpoint.MyAppServletContextListener 
-        </listener-class>
-   </listener>
+
 
     <servlet>
         <servlet-name>RestServlet</servlet-name>

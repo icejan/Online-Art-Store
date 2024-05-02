@@ -43,14 +43,13 @@ public class Business {
         }
         
     }
-    public static ItemsXML getServices(String query, String token) throws IOException {
-
+    public static ItemsXML getServices(String type, String query, String token) throws IOException {
         Client searchclient = ClientBuilder.newClient();
         String searchService = System.getenv("searchService");//"localhost:8080";//
         WebTarget searchwebTarget
                 = searchclient.target("http://"+searchService+"/SearchItems/webresources/search");
         InputStream is
-                = searchwebTarget.path(query).request(MediaType.APPLICATION_XML).get(InputStream.class);
+                = searchwebTarget.path(query).queryParam("type", type).request(MediaType.APPLICATION_XML).get(InputStream.class);
         String xml = IOUtils.toString(is, "utf-8");
         //System.out.println("Business String xml is" + xml);
         ItemsXML items = itemxmltoObjects(xml);
@@ -80,33 +79,60 @@ public class Business {
         return (cartitems);
     }
     
-    public static boolean getAddCartServices(String username, String itemid, String quantity, String token) {
-        //System.out.println("getaddcartservices username:" + username+" itemid: "+itemid+" quantity: "+ quantity);
+    public static int getAddCartServices(String username, String itemid, String quantity, String itemStock, Boolean isUpdate, String token) {
+        System.out.println("getaddcartservices username:" + username+" itemid: "+itemid+" quantity: "+ quantity+" itemstock: "+ itemStock+" isuodate: "+ isUpdate);
         String userid = Account_CRUD.getId(username);
+        
         //System.out.println("userid is" + userid);
+        String action = "add";
+        if (isUpdate){
+            action = "update";
+        }
         
         Client addcartclient = ClientBuilder.newClient();
         String addCartService = System.getenv("addCartService");//"localhost:8080";//
         WebTarget addcartwebTarget
-                = addcartclient.target("http://"+addCartService+"/CartItems/webresources/cart/update");
+                = addcartclient.target("http://"+addCartService+"/CartItems/webresources/cart/"+action);
         
         //@FormParam("itemid") int item_id, @FormParam("userid") int user_id, @FormParam("quantity")
         Form data = new Form();
         data.param("userid", userid);
         data.param("itemid", itemid);
         data.param("quantity", quantity);
+        data.param("itemstock", itemStock);
         
         Response response = addcartwebTarget.request(MediaType.TEXT_HTML).post(Entity.form(data));
-        int status = response.getStatus();
-        if (status == 200) {
-            return true;
-        } else {
-            return false;
-        }
-        //System.out.println("response status" + test);
+        String response_entity = response.readEntity(String.class);
+        //System.out.println("response string: " + response_entity);
+        
+        return Integer.valueOf(response_entity);
         
     }
-
+    
+    public static int getRemoveCartServices(String username, String itemid, String token) {
+        System.out.println("getaddcartservices username:" + username+" itemid: "+itemid);
+        String userid = Account_CRUD.getId(username);
+        
+        //System.out.println("userid is" + userid);
+        
+        Client addcartclient = ClientBuilder.newClient();
+        String removeCartService = System.getenv("addCartService");//"localhost:8080";//
+        WebTarget removecartwebTarget
+                = addcartclient.target("http://"+removeCartService+"/CartItems/webresources/cart/remove");
+        
+        //@FormParam("itemid") int item_id, @FormParam("userid") int user_id, @FormParam("quantity")
+        Form data = new Form();
+        data.param("userid", userid);
+        data.param("itemid", itemid);
+        
+        Response response = removecartwebTarget.request(MediaType.TEXT_HTML).post(Entity.form(data));
+        String response_entity = response.readEntity(String.class);
+        //System.out.println("response string: " + response_entity);
+        
+        return Integer.valueOf(response_entity);
+        
+    }
+    
     private static ItemsXML itemxmltoObjects(String xml) {
         JAXBContext jaxbContext;
         try {
