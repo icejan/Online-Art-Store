@@ -39,8 +39,7 @@ Clone the repo:
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Usage
-* Currently live on http://35.234.253.55/FrontEnd/
-* If installed, compile and run the web application on Netbeans (with TomCat)
+* Compile and run the web application on Netbeans (with TomCat)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
